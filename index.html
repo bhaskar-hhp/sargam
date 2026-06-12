@@ -173,6 +173,13 @@
         .qty.in-stock { background: #d4edda; color: #155724; }
         .qty.out-of-stock { background: #f8d7da; color: #721c24; }
         .qty.low { background: #fff3cd; color: #856404; }
+        #typing::after {
+            content: '|';
+            animation: blink 0.7s step-end infinite;
+        }
+        @keyframes blink {
+            50% { opacity: 0; }
+        }
         .loading, .error, .no-results { text-align: center; padding: 2rem; }
         .error { color: #e63946; }
         .no-results { color: #888; }
@@ -197,7 +204,7 @@
 
     <div id="section-home" class="section active">
         <div class="hero">
-            <h1>Welcome</h1>
+            <h1 id="typing"></h1>
             <div class="hero-buttons">
                 <button class="hero-btn" onclick="showSection('stock')">Stock</button>
                 <button class="hero-btn" onclick="showSection('partner')">Partner Balance</button>
@@ -368,6 +375,17 @@
         }
 
         loadStock();
+
+        const text = "Sargam - Your Command Center";
+        let i = 0;
+        function typeWriter() {
+            if (i < text.length) {
+                document.getElementById('typing').textContent += text.charAt(i);
+                i++;
+                setTimeout(typeWriter, 80);
+            }
+        }
+        typeWriter();
     </script>
 </body>
 </html>
