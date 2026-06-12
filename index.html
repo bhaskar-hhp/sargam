@@ -53,6 +53,22 @@
             .hamburger { display: flex; z-index: 1000; }
         }
         .hero { text-align: center; padding: 4rem 2rem; }
+        .animated-btn {
+            display: inline-block;
+            margin-top: 2rem;
+            padding: 1rem 2rem;
+            font-size: 1.2rem;
+            color: #fff;
+            background: #e63946;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.08); }
+        }
     </style>
 </head>
 <body>
@@ -73,6 +89,7 @@
     </nav>
     <div class="hero">
         <h1>Welcome</h1>
+        <button class="animated-btn">Hamburger Menu</button>
     </div>
     <script>
         const hamburger = document.getElementById('hamburger');
