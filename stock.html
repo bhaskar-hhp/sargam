@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock - Sargam</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: sans-serif; }
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #333;
+            color: #fff;
+            padding: 1rem 2rem;
+        }
+        .navbar a { color: #fff; text-decoration: none; }
+        .nav-links {
+            list-style: none;
+            display: flex;
+            gap: 1.5rem;
+        }
+        .nav-links a { color: #fff; text-decoration: none; }
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            gap: 5px;
+        }
+        .hamburger span {
+            width: 25px;
+            height: 3px;
+            background: #fff;
+            transition: 0.3s;
+        }
+        .hamburger.active span:nth-child(1) { transform: rotate(45deg) translate(5px, 6px); }
+        .hamburger.active span:nth-child(2) { opacity: 0; }
+        .hamburger.active span:nth-child(3) { transform: rotate(-45deg) translate(5px, -6px); }
+        @media (max-width: 768px) {
+            .nav-links {
+                position: fixed;
+                top: 0;
+                left: -100%;
+                width: 250px;
+                height: 100vh;
+                background: #333;
+                flex-direction: column;
+                padding: 4rem 2rem;
+                transition: left 0.3s;
+                z-index: 999;
+            }
+            .nav-links.open { left: 0; }
+            .hamburger { display: flex; z-index: 1000; }
+        }
+        .container { max-width: 900px; margin: 2rem auto; padding: 0 1rem; }
+        h1 { margin-bottom: 1.5rem; }
+        .category {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin-bottom: 0.75rem;
+            overflow: hidden;
+        }
+        .category-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            background: #457b9d;
+            color: #fff;
+            cursor: pointer;
+            font-weight: 600;
+            user-select: none;
+        }
+        .category-header:hover { background: #1d3557; }
+        .category-header .toggle {
+            font-size: 1.2rem;
+            transition: 0.3s;
+        }
+        .category-header .toggle.open { transform: rotate(180deg); }
+        .category-body {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+        .category-body.open { max-height: 5000px; }
+        .category-body ul {
+            list-style: none;
+            padding: 0.5rem 1rem 1rem;
+        }
+        .category-body li {
+            padding: 0.4rem 0;
+            border-bottom: 1px solid #eee;
+            font-size: 0.95rem;
+        }
+        .category-body li:last-child { border-bottom: none; }
+        .loading { text-align: center; padding: 3rem; color: #888; }
+        .error { text-align: center; padding: 2rem; color: #e63946; }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="index.html" class="logo">Sargam</a>
+        <ul class="nav-links" id="navLinks">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="stock.html">Stock</a></li>
+            <li><a href="#">Partner Balance</a></li>
+            <li><a href="#">Setup</a></li>
+            <li><a href="#" onclick="location.reload()">Refresh</a></li>
+        </ul>
+        <div class="hamburger" id="hamburger">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </nav>
+    <div class="container">
+        <h1>Stock</h1>
+        <div id="stockList" class="loading">Loading stock data...</div>
+    </div>
+    <script>
+        const hamburger = document.getElementById('hamburger');
+        const navLinks = document.getElementById('navLinks');
+        hamburger.addEventListener('click', () => {
+            hamburger.classList.toggle('active');
+            navLinks.classList.toggle('open');
+        });
+
+        const SHEET_URL = 'https://docs.google.com/spreadsheets/d/1LZtsBP5irE0_t8vowQFG9bxjiQgoZ1R3hVL3gWAo1zQ/export?format=csv&gid=334012384';
+
+        async function loadStock() {
+            const container = document.getElementById('stockList');
+            try {
+                const res = await fetch(SHEET_URL);
+                if (!res.ok) throw new Error('Failed to fetch data');
+                const csv = await res.text();
+                const lines = csv.split('\n').filter(line => line.trim());
+                const items = [];
+                for (let i = 1; i < lines.length; i++) {
+                    const line = lines[i].trim();
+                    if (!line) continue;
+                    const commaIdx = line.indexOf(',');
+                    if (commaIdx === -1) continue;
+                    const category = line.substring(0, commaIdx).replace(/^"|"$/g, '');
+                    let model = line.substring(commaIdx + 1).replace(/^"|"$/g, '');
+                    model = model.replace(/""/g, '"');
+                    items.push({ category, model });
+                }
+                const grouped = {};
+                items.forEach(item => {
+                    if (!grouped[item.category]) grouped[item.category] = [];
+                    grouped[item.category].push(item.model);
+                });
+                container.innerHTML = '';
+                Object.keys(grouped).forEach(category => {
+                    const catDiv = document.createElement('div');
+                    catDiv.className = 'category';
+                    catDiv.innerHTML = `
+                        <div class="category-header" onclick="toggleCategory(this)">
+                            <span>${category} (${grouped[category].length})</span>
+                            <span class="toggle">&#9660;</span>
+                        </div>
+                        <div class="category-body open">
+                            <ul>${grouped[category].map(m => `<li>${m}</li>`).join('')}</ul>
+                        </div>
+                    `;
+                    container.appendChild(catDiv);
+                });
+            } catch (err) {
+                container.innerHTML = `<div class="error">Error loading stock: ${err.message}</div>`;
+            }
+        }
+
+        function toggleCategory(header) {
+            const body = header.nextElementSibling;
+            const toggle = header.querySelector('.toggle');
+            body.classList.toggle('open');
+            toggle.classList.toggle('open');
+        }
+
+        loadStock();
+    </script>
+</body>
+</html>
