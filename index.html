@@ -53,21 +53,30 @@
             .hamburger { display: flex; z-index: 1000; }
         }
         .hero { text-align: center; padding: 4rem 2rem; }
-        .animated-btn {
-            display: inline-block;
-            margin-top: 2rem;
-            padding: 1rem 2rem;
-            font-size: 1.2rem;
-            color: #fff;
-            background: #e63946;
-            border: none;
-            border-radius: 8px;
+        .hero-hamburger {
+            display: inline-flex;
+            flex-direction: column;
+            gap: 6px;
             cursor: pointer;
-            animation: pulse 1.5s ease-in-out infinite;
+            margin-top: 2rem;
+            padding: 1rem;
+            background: #333;
+            border-radius: 8px;
+            animation: bounce 1.2s ease-in-out infinite;
         }
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.08); }
+        .hero-hamburger span {
+            width: 30px;
+            height: 4px;
+            background: #fff;
+            border-radius: 2px;
+            transition: 0.3s;
+        }
+        .hero-hamburger.active span:nth-child(1) { transform: rotate(45deg) translate(7px, 7px); }
+        .hero-hamburger.active span:nth-child(2) { opacity: 0; }
+        .hero-hamburger.active span:nth-child(3) { transform: rotate(-45deg) translate(7px, -7px); }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
         }
     </style>
 </head>
@@ -89,15 +98,23 @@
     </nav>
     <div class="hero">
         <h1>Welcome</h1>
-        <button class="animated-btn">Hamburger Menu</button>
+        <div class="hero-hamburger" id="heroHamburger">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
     </div>
     <script>
         const hamburger = document.getElementById('hamburger');
+        const heroHamburger = document.getElementById('heroHamburger');
         const navLinks = document.getElementById('navLinks');
-        hamburger.addEventListener('click', () => {
+        function toggleMenu() {
             hamburger.classList.toggle('active');
+            heroHamburger.classList.toggle('active');
             navLinks.classList.toggle('open');
-        });
+        }
+        hamburger.addEventListener('click', toggleMenu);
+        heroHamburger.addEventListener('click', toggleMenu);
     </script>
 </body>
 </html>
