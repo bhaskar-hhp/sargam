@@ -308,7 +308,8 @@
                     <div class="setup-form">
                         <h3>Add Item</h3>
                         <select id="addItemCategory"></select>
-                        <input type="text" id="newItem" placeholder="Model name">
+                        <input type="text" id="newItem" list="modelList" placeholder="Type or select model name">
+                        <datalist id="modelList"></datalist>
                         <button onclick="addItem()">Add</button>
                     </div>
                     <div class="setup-form">
@@ -342,6 +343,7 @@
         const SHEET2 = 'https://docs.google.com/spreadsheets/d/1LZtsBP5irE0_t8vowQFG9bxjiQgoZ1R3hVL3gWAo1zQ/export?format=csv&gid=1431482232';
 
         let allItems = [];
+        let allModelNames = [];
 
         function parseCSV(csv) {
             const lines = csv.split('\n').filter(l => l.trim());
@@ -392,6 +394,11 @@
                     const qty = qtyMap[model.toLowerCase()] !== undefined ? qtyMap[model.toLowerCase()] : 0;
                     return { category: p.a.trim(), model, qty };
                 });
+
+                allModelNames = qtyData.map(r => r.a.trim()).filter(Boolean);
+                allModelNames = [...new Set(allModelNames)].sort();
+                const dl = document.getElementById('modelList');
+                if (dl) dl.innerHTML = allModelNames.map(n => `<option value="${n.replace(/"/g, '&quot;')}">`).join('');
 
                 applyFilters();
             } catch (err) {
