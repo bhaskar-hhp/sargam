@@ -510,7 +510,7 @@
                 return null;
             }
             try {
-                const res = await fetch(APPS_SCRIPT_URL, {
+                await fetch(APPS_SCRIPT_URL, {
                     method: 'POST',
                     mode: 'no-cors',
                     headers: { 'Content-Type': 'application/json' },
@@ -526,23 +526,25 @@
         async function addCategory() {
             const cat = document.getElementById('newCategory').value.trim();
             if (!cat) { setupMsg('Enter a category name', 'error'); return; }
+            document.getElementById('newCategory').value = '';
             const ok = await callAppsScript('addCategory', { category: cat });
-            if (ok) { setupMsg(`Category "${cat}" added! Refresh stock to see changes.`, 'success'); }
+            if (ok) { setupMsg('Category sent! Refresh stock to see it.', 'success'); }
         }
 
         async function removeCategory() {
             const cat = document.getElementById('removeCategory').value;
             if (!confirm(`Remove entire category "${cat}" and all its items?`)) return;
             const ok = await callAppsScript('removeCategory', { category: cat });
-            if (ok) { setupMsg(`Category "${cat}" removed! Refresh stock to see changes.`, 'success'); }
+            if (ok) { setupMsg('Removal sent! Refresh stock to verify.', 'success'); }
         }
 
         async function addItem() {
             const cat = document.getElementById('addItemCategory').value;
             const item = document.getElementById('newItem').value.trim();
             if (!item) { setupMsg('Enter a model name', 'error'); return; }
+            document.getElementById('newItem').value = '';
             const ok = await callAppsScript('addItem', { category: cat, item });
-            if (ok) { setupMsg(`Item added to "${cat}"! Refresh stock to see changes.`, 'success'); }
+            if (ok) { setupMsg('Item sent! Refresh stock to see it.', 'success'); }
         }
 
         async function removeItem() {
@@ -550,7 +552,7 @@
             const item = document.getElementById('removeItem').value;
             if (!confirm(`Remove "${item}" from "${cat}"?`)) return;
             const ok = await callAppsScript('removeItem', { category: cat, item });
-            if (ok) { setupMsg(`Item removed! Refresh stock to see changes.`, 'success'); }
+            if (ok) { setupMsg('Removal sent! Refresh stock to verify.', 'success'); }
         }
 
         // Reload categories after stock data loads
