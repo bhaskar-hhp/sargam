@@ -398,7 +398,8 @@
                 allModelNames = qtyData.map(r => r.a.trim()).filter(Boolean);
                 allModelNames = [...new Set(allModelNames)].sort();
                 const dl = document.getElementById('modelList');
-                if (dl) dl.innerHTML = allModelNames.map(n => `<option value="${n.replace(/"/g, '&quot;')}">`).join('');
+                if (dl) dl.innerHTML = allModelNames.map(n => `<option value="${n.replace(/"/g, '&quot;')}">${n.replace(/"/g, '&quot;')}</option>`).join('');
+                console.log('Models loaded:', allModelNames.length);
 
                 applyFilters();
             } catch (err) {
