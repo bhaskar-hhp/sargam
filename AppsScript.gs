@@ -42,6 +42,14 @@ function doPost(e) {
       return json({ success: true, msg: 'Item removed' });
     }
 
+    if (action === 'updateLedger') {
+      const s = sheet.getSheetById(0);
+      const rows = data.rows || [];
+      s.clearContents();
+      s.getRange(1, 1, rows.length + 1, 3).setValues([['Ledger Name', 'Opening Balance', 'Closing Balance'], ...rows]);
+      return json({ success: true, msg: `Ledger updated with ${rows.length} entries` });
+    }
+
     return json({ success: false, msg: 'Unknown action' });
   } catch (err) {
     return json({ success: false, msg: err.toString() });
