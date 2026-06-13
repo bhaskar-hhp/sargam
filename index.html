@@ -432,7 +432,8 @@
                     }
                 }
                 fields.push(cur);
-                if (fields.length >= 2) rows.push({ a: fields[0], b: fields[1] });
+                if (fields.length >= 3) rows.push({ a: fields[0], b: fields[1], c: fields[2] });
+                else if (fields.length >= 2) rows.push({ a: fields[0], b: fields[1] });
             }
             return rows;
         }
@@ -564,7 +565,7 @@
                 if (!res.ok) throw new Error('Failed to fetch partner data');
                 const csv = await res.text();
                 const rows = parseCSV(csv);
-                allPartners = rows.map(r => ({ name: r.a, opening: r.b, closing: r.c }));
+                allPartners = rows.map(r => ({ name: r.a, closing: r.c || r.b }));
                 filterPartners();
             } catch (err) {
                 container.innerHTML = `<div class="error">Error: ${err.message}</div>`;
@@ -579,8 +580,8 @@
                 container.innerHTML = '<div class="no-results">No partners found.</div>';
                 return;
             }
-            container.innerHTML = '<table class="partner-table"><thead><tr><th>Partner Name</th><th>Opening Balance</th><th>Closing Balance</th></tr></thead><tbody>' +
-                filtered.map(p => `<tr><td>${p.name}</td><td>${p.opening}</td><td>${p.closing}</td></tr>`).join('') +
+            container.innerHTML = '<table class="partner-table"><thead><tr><th>Partner Name</th><th>Closing Balance</th></tr></thead><tbody>' +
+                filtered.map(p => `<tr><td>${p.name}</td><td>${p.closing}</td></tr>`).join('') +
                 '</tbody></table>';
         }
 
