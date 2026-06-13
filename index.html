@@ -285,11 +285,13 @@
         }
         .modal-list div:hover { background: #e0e0e0; }
         #setupMsg.error { color: #e63946; }
-        .partner-table { width: 100%; border-collapse: collapse; background: #fff; color: #333; border-radius: 8px; overflow: hidden; }
-        .partner-table th { background: #457b9d; color: #fff; padding: 0.75rem 1rem; text-align: left; }
-        .partner-table td { padding: 0.6rem 1rem; border-bottom: 1px solid #eee; }
-        .partner-table tr:last-child td { border-bottom: none; }
-        .partner-table tr:hover td { background: #f5f5f5; }
+        .partner-row {
+            display: flex; justify-content: space-between; align-items: center;
+            background: #fff; color: #333; padding: 0.6rem 1rem;
+            border-radius: 6px; margin-bottom: 0.4rem;
+        }
+        .partner-name { font-weight: 500; }
+        .partner-balance { font-weight: 600; color: #2ecc71; }
         .loading, .error, .no-results { text-align: center; padding: 2rem; }
         .error { color: #e63946; }
         .no-results { color: #888; }
@@ -575,14 +577,16 @@
         function filterPartners() {
             const container = document.getElementById('partnerList');
             const q = document.getElementById('partnerSearch').value.trim().toLowerCase();
-            const filtered = q ? allPartners.filter(p => p.name.toLowerCase().includes(q)) : allPartners;
+            if (!q) {
+                container.innerHTML = '<div class="no-results">Type a partner name to search</div>';
+                return;
+            }
+            const filtered = allPartners.filter(p => p.name.toLowerCase().includes(q));
             if (filtered.length === 0) {
                 container.innerHTML = '<div class="no-results">No partners found.</div>';
                 return;
             }
-            container.innerHTML = '<table class="partner-table"><thead><tr><th>Partner Name</th><th>Closing Balance</th></tr></thead><tbody>' +
-                filtered.map(p => `<tr><td>${p.name}</td><td>${p.closing}</td></tr>`).join('') +
-                '</tbody></table>';
+            container.innerHTML = filtered.map(p => `<div class="partner-row"><span class="partner-name">${p.name}</span><span class="partner-balance">${p.closing}</span></div>`).join('');
         }
 
         loadStock();
