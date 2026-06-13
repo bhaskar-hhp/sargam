@@ -292,6 +292,7 @@
         }
         .partner-name { font-weight: 500; }
         .partner-balance { font-weight: 600; color: #2ecc71; }
+        .partner-balance.negative { color: #e63946; }
         .loading, .error, .no-results { text-align: center; padding: 2rem; }
         .error { color: #e63946; }
         .no-results { color: #888; }
@@ -586,7 +587,7 @@
                 container.innerHTML = '<div class="no-results">No partners found.</div>';
                 return;
             }
-            container.innerHTML = filtered.map(p => `<div class="partner-row"><span class="partner-name">${p.name}</span><span class="partner-balance">${p.closing}</span></div>`).join('');
+            container.innerHTML = filtered.map(p => `<div class="partner-row"><span class="partner-name">${p.name}</span><span class="partner-balance ${p.closing.startsWith('-') ? 'negative' : ''}">${p.closing}</span></div>`).join('');
         }
 
         loadStock();
